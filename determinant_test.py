@@ -12,12 +12,20 @@ class KnownDeterminant(unittest.TestCase):
     def test_number_of_trees(self):
         """ It test for a number of graph sizes, if the matrix determinant
         returns the correct value"""
-        for n in xrange(2,25):
+        for n in xrange(2,15):
             m = self.generate_matrix(n)
             result = (dependency_matrix.number_of_spanning_trees(m))
-            print """testing for graph size %d, and the reurned number is %d, 
+            print """testing for graph size %d, and the calculated number is %d, 
             (the true value is %d) with %d difference""" % (n, round(result), n**(n-2), \
             n**(n-2) - round(result))
+            self.assertEqual(float((n)**(n-2)), round(result))
+            
+            
+    def test_number_of_forests(self):
+        for n in xrange(2,15):
+            m = self.generate_matrix(n)
+            result = (dependency_matrix.number_of_forests(m))
+            print """number of forests with %d nodes are %d""" % (n, round(result))
             # self.assertEqual(float((n)**(n-2)), round(result))
 
 

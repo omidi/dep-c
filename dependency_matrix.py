@@ -1,5 +1,14 @@
 import numpy as np
 
+from numpy.ctypeslib import ctypes    
+from numpy.ctypeslib import ndpointer    
+lib = ctypes.cdll.LoadLibrary("./determinant.so")
+calculate_determinant = lib.determinant
+calculate_determinant.restype = ctypes.c_double
+calculate_determinant.argtypes = [ndpointer(ctypes.c_double, flags="C_CONTIGUOUS"),
+                ctypes.c_int]
+
+
 def load_matrix(infile, sep=','):
     try:        
         with open(infile) as f:
@@ -35,23 +44,19 @@ def matrix_minor_last_row_column(matrix):
     n = len(matrix) - 1
     return matrix[0:n, 0:n]
 
-
-from numpy.ctypeslib import ctypes    
-from numpy.ctypeslib import ndpointer    
-lib = ctypes.cdll.LoadLibrary("./determinant.so")
-calculate_determinant = lib.determinant
-calculate_determinant.restype = ctypes.c_double
-calculate_determinant.argtypes = [ndpointer(ctypes.c_double, flags="C_CONTIGUOUS"),
-                ctypes.c_int]
-
         
 def number_of_spanning_trees(matrix):
     L_minor = matrix_minor_last_row_column(laplacian_matrix(matrix))
-    return np.linalg.det(L_minor)
-    # return np.exp(calculate_determinant(L_minor.flatten(), len(L_minor)))
+    # return np.linalg.det(L_minor)
+    return np.exp(calculate_determinant(L_minor.flatten(), len(L_minor)))
+
+
+def number_of_forests(matrix):
+    W = laplacian_matrix(matrix) + np.identity(len(matrix), dtype=np.float64)
+    return np.exp(calculate_determinant(W.flatten(), len(W)))
+
     
             
-
 if __name__ == '__main__':
     import csv
     import numpy as np
